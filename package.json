@@ -1,0 +1,19 @@
+{
+  "name": "k-konjugator",
+  "version": "1.0.0",
+  "description": "K Bot",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "hangul-js": "^0.2.6"
+  },
+  "author": "Dje Tang",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djetang/k-konjugator.git"
+  }
+}
