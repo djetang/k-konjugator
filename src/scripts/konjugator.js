@@ -4,7 +4,7 @@ const Hangul = require('hangul-js');
 const validTenses = ['past', 'present', 'future'];
 const validLevels = ['informalLow', 'informalHigh', 'formalHigh'];
 const validVowels = ['ㅏ','ㅑ','ㅓ','ㅕ','ㅗ','ㅛ','ㅜ','ㅠ','ㅡ','ㅣ','ㅐ','ㅒ','ㅔ','ㅖ']
-const irregularVerbEnd = ['ㅅ', 'ㄷ', 'ㅂ', 'ㅡ', 'ㄹ']
+const irregularVerbEnd = ['ㅅ', 'ㄷ', 'ㅂ', 'ㅡ']
 const irregularVerbWord = ['르']
 const bieutExceptionsOh = ['돕다', '곱다']
 const irregularExceptions = ['웃다','벗다','씻다','걷다','받다','묻다','닫다','좁다','잡다','넓다','따르다']
@@ -95,79 +95,129 @@ function handleFormalHighPresent(cut, veryLL, level, tense){
 }
 
 function handleAllWah(cut, veryLL, level, tense){
-    if (veryLL == 'ㅗ' && tense !== 'future')
+    const oneshortcut = (cut.slice(0,cut.length-1))
+    if (veryLL == 'ㅗ' && (tense == 'past' || tense == 'present'))
         return Hangul.assemble ([...cut, ...conjugations[level][tense]['아'].slice(1)]); /** ㅗ:  delete ㅇ,  assemble */
-    else if (veryLL == 'ㅏ' && tense !== 'future')
-        return Hangul.assemble ([...cut, ...conjugations[level][tense]['아'].slice(2)]); /** ㅏ: delete ㅇ, ㅏ, assemble */
-    else
+    else if (veryLL == 'ㅏ' && (tense == 'past' || tense == 'present'))
+        return Hangul.assemble ([...oneshortcut, ...conjugations[level][tense]['아'].slice(1)]); /** ㅏ: delete ㅇ, ㅏ, assemble */
+    else if (((veryLL == 'ㅗ') || (veryLL == 'ㅏ')) && tense == 'future')
         return Hangul.assemble ([...cut, 'ㄹ', ...(conjugations[level][tense]['아'])]);
+    else if ((veryLL !== 'ㅗ' || veryLL !== 'ㅏ') && (tense == 'past' || tense == 'present'))
+        return Hangul.assemble ([...cut, ...conjugations[level][tense]['아']]);
+    else 
+        return Hangul.assemble ([...cut, 'ㅇ', 'ㅡ', 'ㄹ', ...conjugations[level][tense]['아']]);
 }
 
-function handleSiotAndDigeut(cut, veryLL, word, level, tense){
+function handleSiot(cut, veryLL, word, level, tense){
     const stemletters = lastStemLetters(word)
     const oneshortLL = stemletters[stemletters.length-2]
     const oneshortcut = (cut.slice(0,cut.length-1))
-    if (veryLL == 'ㅅ' && tense === 'past')
+    if (tense === 'past')
         return handleAsRegulars(oneshortcut, oneshortLL, word, level, tense);
-    else if (veryLL == 'ㅅ' && tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
+    else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
         return handleAsRegulars(oneshortcut, oneshortLL, word, level, tense);
     else 
         return handleAsRegulars(cut, veryLL, word, level, tense);
 }
 
-function handleBieup(cut, veryLL, word, level, tense){
+function handleDieut(cut, veryLL, word, level, tense){
+    const addARu = [...(cut.slice(0,cut.length-1)),'ㄹ']
+    if (tense === 'past')
+        return handleAsRegulars(addARu, 'ㄹ', word, level, tense);
+    else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
+        return handleAsRegulars(addARu, 'ㄹ', word, level, tense);
+    else 
+        return handleAsRegulars(cut, veryLL, word, level, tense);
+}
+
+function handleBieut(cut, veryLL, word, level, tense){
     const newOCut = ([...cut.slice(0, cut.length-1), 'ㅇ', 'ㅗ'])
     const newUCut = ([...cut.slice(0, cut.length-1), 'ㅇ', 'ㅜ'])
     const newOLL = 'ㅗ'
     const newULL = 'ㅜ'
     if (bieutExceptionsOh.includes(word))
         if (tense === 'past')
-            return handleAsRegulars(newOCut, newOLL, word, level, tense);
+            return Hangul.assemble ([...newOCut, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
         else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
-            return handleAsRegulars(newOCut, newOLL, word, level, tense);
-    else 
+            return Hangul.assemble ([...newOCut, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+        else 
+            return handleAsRegulars(cut, veryLL, word, level, tense);
+    else
         if (tense === 'past')
-            return handleAsRegulars(newUCut, newULL, word, level, tense);
+            return Hangul.assemble ([...newUCut, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
         else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
-            return handleAsRegulars(newUCut, newULL, word, level, tense); 
+            return Hangul.assemble ([...newUCut, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
+        else 
+            return handleAsRegulars(cut, veryLL, word, level, tense);
+}   
+
+function handleEu(cut, veryLL, word, level, tense){
+    const oneshortcut = (cut.slice(0,cut.length-1))
+    const decidingLL = findTheVowel(cut)
+    if (decidingLL == ('ㅗ') || decidingLL == ('ㅏ'))
+        if (tense === 'past')
+            return Hangul.assemble ([...oneshortcut, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+        else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
+            return Hangul.assemble ([...oneshortcut, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+        else 
+            return handleAsRegulars(cut, veryLL, word, level, tense);
+    else
+        if (tense === 'past')
+            return Hangul.assemble ([...oneshortcut, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
+        else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
+            return Hangul.assemble ([...oneshortcut, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
         else 
             return handleAsRegulars(cut, veryLL, word, level, tense);
 }
 
-// function handleEu(cut, veryLL, word, level, tense){
-//     const oneshortcut = (cut.slice(0,cut.length-1))
-//     const decidingLL = findTheVowel(cut)
-//     if (tense === 'past')
-//         return handleAsRegulars(oneshortcut, decidingLL, word, level, tense);
-//     else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
-//         return handleAsRegulars(oneshortcut, decidingLL, word, level, tense); 
-//     else 
-//         return handleAsRegulars(cut, veryLL, word, level, tense);
-// }
+function handleReu(cut, veryLL, word, level, tense){
+    const addTwoRu = [...(cut.slice(0,cut.length-2)),'ㄹ', 'ㄹ']
+    const decidingLL = findTheVowel(cut)
+    if (decidingLL == ('ㅗ') || decidingLL == ('ㅏ'))
+        if (tense === 'past')
+            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+        else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
+            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+        else 
+            return handleAsRegulars(cut, veryLL, word, level, tense);
+    else
+        if (tense === 'past')
+            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
+        else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
+            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
+        else 
+            return handleAsRegulars(cut, veryLL, word, level, tense);
+}
 
-// function findTheVowel(cut){
-//     if (cut.length < 3)
-//         return 'ㅓ';
-//     else if ((cut.slice(cut.length-4,cut.length-3)).includes(validVowels))
-//         return ([...cut.slice(cut.length-4,cut.length-3)]);
-//     else if ((cut.slice(cut.length-3,cut.length-2)).includes(validVowels))
-//         return ([...cut.slice(cut.length-3,cut.length-2)]);
-//     else
-//         return 'something wrong'
-// }
+function findTheVowel(cut){
+    if (cut.length < 3)
+        return 'ㅓ';
+    else if (validVowels.includes(cut[cut.length-3]))
+        return cut[cut.length-3];
+    else if (validVowels.includes(cut[cut.length-4]))
+        return cut[cut.length-4];
+    else
+        return 'something wrong'
+}
 
 function handleAllIrregulars(cut, veryLL, word, level, tense){
-    if (veryLL == 'ㅅ' || veryLL == 'ㄷ')
-        return handleSiotAndDigeut(cut, veryLL, word, level, tense);
+    const lastBlock = identifyLastStem(word)
+    if (veryLL == 'ㅅ')
+        return handleSiot(cut, veryLL, word, level, tense);
+    else if (veryLL == 'ㄷ')
+        return handleDieut(cut, veryLL, word, level, tense);
     else if (veryLL == 'ㅂ')
-        return handleBieup(cut, veryLL, word, level, tense);
-   // else if (veryLL == 'ㅡ')
-   //     return handleEu(cut, veryLL, word, level, tense);
+        return handleBieut(cut, veryLL, word, level, tense);
+    else if (veryLL == 'ㅡ')
+       return handleEu(cut, veryLL, word, level, tense);
+    else if (lastBlock == '르')
+        return handleReu(cut, veryLL, word, level, tense);
     else
-        return 'not done';
+        return 'i dont think there are any more irregulars..?';
 }
 
 function handleAsRegulars(cut, veryLL, word, level, tense){
+    const oneshortcut = (cut.slice(0,cut.length-1))
     if (level == 'formalHigh' && tense == 'present') /** for 습니다 / ~ㅡㅂ 니다 */
         return handleFormalHighPresent(cut, veryLL, level, tense);
     else if ((veryLL == ('ㅜ' || 'ㅡ')) && tense == ('past' || 'present'))
@@ -203,7 +253,7 @@ function conjugateHaDahYo(word,level,tense) {
     }
 
 function kKonjugator (word,level,tense){
-    if (!validLevels.includes(level) || (!validTenses.includes(tense)) )
+    if (!validLevels.includes(level) || (!validTenses.includes(tense)))
         return 'include a proper tense!';
     else 
         if (isThisHaDah(word)) 
