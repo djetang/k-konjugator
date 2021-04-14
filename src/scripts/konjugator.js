@@ -21,7 +21,7 @@ function isThisSomething(word, whatMightItBe) {
     if (word.length < whatMightItBe.length)
         return false;
     else 
-        return word.lastIndexOf(whatMightItBe) === word.length - whatMightItBe.length;
+        return word.lastIndexOf(whatMightItBe) == word.length - whatMightItBe.length;
 }
 
 function isThisDah(word) {
@@ -32,12 +32,8 @@ function isThisHaDah(word){
     return isThisSomething(word, '하다');
 }
 
-function isThisSibNiDah(word){
-    return isThisSomething(word, '습니다');
-}
-
-function isThisIbNiDah(word){
-    return isThisSomething(word, '입니다');
+function isThisNiDah(word){
+    return isThisSomething(word, '니다');
 }
 
 function identifyLastStem(word) {
@@ -258,10 +254,8 @@ function kKonjugator (word,level,tense){
     else 
         if (isThisHaDah(word)) 
             return conjugateHaDahYo(word,level,tense);
-        else if (isThisSibNiDah(word))
-            return 'Give me the dictionary form, this is the formal form!';
-        else if (isThisIbNiDah(word))
-            return 'this is the formal form of TO BE';
+        else if (isThisNiDah(word))
+            return 'This isnt the dictionary form... is it? Let me check my dictionary...';
         else if (isThisDah(word))
             return conjugateDahYo(word,level,tense);
         else  
