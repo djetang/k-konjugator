@@ -147,6 +147,26 @@ function handleBieut(cut, veryLL, word, level, tense){
             return handleAsRegulars(cut, veryLL, word, level, tense);
 }   
 
+function handleReu(cut, veryLL, word, level, tense){
+    const addTwoRu = [...(cut.slice(0,cut.length-2)),'ㄹ', 'ㄹ']
+    const decidingLL = findTheVowel(cut)
+    console.log(identifyLastStem(word))
+    if (decidingLL == ('ㅗ') || decidingLL == ('ㅏ'))
+        if (tense === 'past')
+            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+        else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
+            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+        else 
+            return handleAsRegulars(cut, veryLL, word, level, tense);
+    else
+        if (tense === 'past')
+            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
+        else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
+            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
+        else 
+            return handleAsRegulars(cut, veryLL, word, level, tense);
+}
+
 function handleEu(cut, veryLL, word, level, tense){
     const oneshortcut = (cut.slice(0,cut.length-1))
     const decidingLL = findTheVowel(cut)
@@ -162,25 +182,6 @@ function handleEu(cut, veryLL, word, level, tense){
             return Hangul.assemble ([...oneshortcut, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
         else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
             return Hangul.assemble ([...oneshortcut, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
-        else 
-            return handleAsRegulars(cut, veryLL, word, level, tense);
-}
-
-function handleReu(cut, veryLL, word, level, tense){
-    const addTwoRu = [...(cut.slice(0,cut.length-2)),'ㄹ', 'ㄹ']
-    const decidingLL = findTheVowel(cut)
-    if (decidingLL == ('ㅗ') || decidingLL == ('ㅏ'))
-        if (tense === 'past')
-            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
-        else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
-            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
-        else 
-            return handleAsRegulars(cut, veryLL, word, level, tense);
-    else
-        if (tense === 'past')
-            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
-        else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
-            return Hangul.assemble ([...addTwoRu, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
         else 
             return handleAsRegulars(cut, veryLL, word, level, tense);
 }
@@ -204,10 +205,10 @@ function handleAllIrregulars(cut, veryLL, word, level, tense){
         return handleDieut(cut, veryLL, word, level, tense);
     else if (veryLL == 'ㅂ')
         return handleBieut(cut, veryLL, word, level, tense);
-    else if (veryLL == 'ㅡ')
-       return handleEu(cut, veryLL, word, level, tense);
     else if (lastBlock == '르')
         return handleReu(cut, veryLL, word, level, tense);
+    else if (veryLL == 'ㅡ')
+        return handleEu(cut, veryLL, word, level, tense);
     else
         return 'i dont think there are any more irregulars..?';
 }
@@ -235,9 +236,12 @@ function handleAsRegulars(cut, veryLL, word, level, tense){
 function conjugateDahYo(word,level,tense) {
     const cut = cutTheLastDahLetters(word)
     const veryLL = veryLastLetter(word)
+    const lastBlock = identifyLastStem(word)
     if (irregularExceptions.includes(word))
         return handleAsRegulars(cut, veryLL, word, level, tense);
     else if (irregularVerbEnd.includes(veryLL))
+        return handleAllIrregulars(cut, veryLL, word, level, tense);
+    else if (irregularVerbWord.includes(lastBlock))
         return handleAllIrregulars(cut, veryLL, word, level, tense);
     else
         return handleAsRegulars(cut, veryLL, word, level, tense);
