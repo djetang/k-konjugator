@@ -36,6 +36,11 @@ function isThisNiDah(word){
     return isThisSomething(word, '니다');
 }
 
+ function isThisIIDah(word){
+    return (word === '이다');
+ }
+
+
 function identifyLastStem(word) {
     const cutdah = cutTheLastDah(word)
     const cuthadah = cutTheLastHaDah(word)
@@ -112,6 +117,8 @@ function handleSiot(cut, veryLL, word, level, tense){
         return handleAsRegulars(oneshortcut, oneshortLL, word, level, tense);
     else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
         return handleAsRegulars(oneshortcut, oneshortLL, word, level, tense);
+    else if (tense === 'future')
+        return handleAsRegulars(oneshortcut, veryLL, word, level, tense);
     else 
         return handleAsRegulars(cut, veryLL, word, level, tense);
 }
@@ -122,29 +129,35 @@ function handleDieut(cut, veryLL, word, level, tense){
         return handleAsRegulars(addARu, 'ㄹ', word, level, tense);
     else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
         return handleAsRegulars(addARu, 'ㄹ', word, level, tense);
+    else if (tense === 'future')
+        return handleAsRegulars(addARu, 'ㄹ', word, level, tense);
     else 
         return handleAsRegulars(cut, veryLL, word, level, tense);
 }
 
 function handleBieut(cut, veryLL, word, level, tense){
-    const newOCut = ([...cut.slice(0, cut.length-1), 'ㅇ', 'ㅗ'])
-    const newUCut = ([...cut.slice(0, cut.length-1), 'ㅇ', 'ㅜ'])
+    const newOCut = [...cut.slice(0, cut.length-1), 'ㅇ', 'ㅗ']
+    const newUCut = [...cut.slice(0, cut.length-1), 'ㅇ', 'ㅜ']
     const newOLL = 'ㅗ'
     const newULL = 'ㅜ'
     if (bieutExceptionsOh.includes(word))
         if (tense === 'past')
-            return Hangul.assemble ([...newOCut, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+            return handleAsRegulars (newOCut, newOLL, word, level, tense); 
         else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
-            return Hangul.assemble ([...newOCut, ...conjugations[level][tense]['아'].slice(1)]) /** delete ㅇ, assemble */
+            return handleAsRegulars (newOCut, newOLL, word, level, tense);
+        else if (tense === 'future')
+            return handleAsRegulars (newOCut, newOLL, word, level, tense);   
         else 
             return handleAsRegulars(cut, veryLL, word, level, tense);
     else
         if (tense === 'past')
-            return Hangul.assemble ([...newUCut, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
+            return handleAsRegulars (newUCut, newULL, word, level, tense); 
         else if (tense === 'present' && (level === 'informalLow' || level === 'informalHigh'))
-            return Hangul.assemble ([...newUCut, ...conjugations[level][tense]['어'].slice(1)]) /** delete ㅇ, assemble */
-        else 
-            return handleAsRegulars(cut, veryLL, word, level, tense);
+            return handleAsRegulars (newUCut, newULL, word, level, tense);
+        else if (tense === 'future')
+            return handleAsRegulars (newUCut, newULL, word, level, tense);   
+    else 
+        return handleAsRegulars(cut, veryLL, word, level, tense);
 }   
 
 function handleReu(cut, veryLL, word, level, tense){
@@ -247,6 +260,10 @@ function conjugateDahYo(word,level,tense) {
         return handleAsRegulars(cut, veryLL, word, level, tense);
 }
 
+function conjugateIIDah(word, level, tense){
+    const cut = cutTheLast
+}
+
 function conjugateHaDahYo(word,level,tense) {
     const cut = cutTheLastHaDahLetters(word)
     return Hangul.assemble ([...cut, ...conjugations[level][tense]['하']]);
@@ -260,10 +277,44 @@ function kKonjugator (word,level,tense){
             return conjugateHaDahYo(word,level,tense);
         else if (isThisNiDah(word))
             return 'This isnt the dictionary form... is it? Let me check my dictionary...';
+        else if (isThisIIDah(word))
+            return Hangul.assemble ([...conjugationsIIDah[level][tense]])
         else if (isThisDah(word))
             return conjugateDahYo(word,level,tense);
         else  
             return 'this doesnt look like a dictionary form verb to me';
+}
+
+let conjugationsIIDah = {
+    informalLow: {
+        past: 
+            ['ㅇ','ㅣ','ㅇ','ㅓ','ㅆ','ㅇ','ㅓ','/','ㅇ','ㅕ','ㅆ','ㅇ','ㅓ'],
+            //vowel: ['ㅇ','ㅕ','ㅅ','ㅅ','ㅇ','ㅓ'],
+        
+        present:
+            ['ㅇ','ㅣ','ㅇ','ㅑ','/','ㅇ','ㅑ'],
+            //vowel: ['ㅇ','ㅑ'],
+        future:
+            ['ㅇ','ㅣ','ㄹ','ㄱ','ㅓ','ㅇ','ㅑ']
+    },
+    informalHigh: {
+        past: 
+            ['ㅇ','ㅣ','ㅇ','ㅓ','ㅆ','ㅇ','ㅓ','ㅇ','ㅛ','/','ㅇ','ㅕ','ㅆ','ㅇ','ㅓ','ㅇ','ㅛ'],
+            //vowel: ['ㅇ','ㅕ','ㅅ','ㅅ','ㅇ','ㅓ','ㅇ','ㅛ'],
+        present: 
+            ['ㅇ','ㅣ','ㅇ','ㅖ','ㅇ','ㅛ','/','ㅇ','ㅖ','ㅇ','ㅛ'],
+            //vowel: ['ㅇ','ㅖ','ㅇ','ㅛ'],
+        future:
+            ['ㅇ','ㅣ','ㄹ','ㄱ','ㅓ','ㅇ','ㅖ','ㅇ','ㅛ']
+    },
+    formalHigh: {
+        past:
+            ['ㅇ','ㅣ','ㅇ','ㅓ','ㅆ','ㅇ','ㅣ','ㅂ','ㄴ','ㅣ','ㄷ','ㅏ','/','ㅇ','ㅕ','ㅆ','ㅇ','ㅣ','ㅂ','ㄴ','ㅣ','ㄷ','ㅏ'],
+        present:
+            ['ㅇ','ㅣ','ㅂ','ㄴ','ㅣ','ㄷ','ㅏ'],
+        future:
+            ['ㅇ','ㅣ','ㄹ','ㄱ','ㅓ','ㅇ','ㅣ','ㅂ','ㄴ','ㅣ','ㄷ','ㅏ']
+    },
 }
 
 let conjugations = {
@@ -279,8 +330,8 @@ let conjugations = {
             하: ['ㅎ','ㅐ'],
         },
         future:{
-            아: ['ㄱ','ㅔ','ㅆ','ㅇ','ㅓ'],
-            어: ['ㄱ','ㅔ','ㅆ','ㅇ','ㅓ'],
+            아: ['ㄱ','ㅓ','ㅇ','ㅑ'],
+            어: ['ㄱ','ㅓ','ㅇ','ㅑ'],
             하: ['ㅎ','ㅏ','ㄹ','ㄱ','ㅓ','ㅇ','ㅑ'],
         },
     },
@@ -296,8 +347,8 @@ let conjugations = {
             하: ['ㅎ','ㅐ','ㅇ','ㅛ'],
         },
         future:{
-            아: ['ㄱ','ㅔ','ㅆ','ㅇ','ㅓ','ㅇ','ㅛ'],
-            어: ['ㄱ','ㅔ','ㅆ','ㅇ','ㅓ','ㅇ','ㅛ'],
+            아: ['ㄱ','ㅓ','ㅇ','ㅖ','ㅇ','ㅛ'],
+            어: ['ㄱ','ㅓ','ㅇ','ㅖ','ㅇ','ㅛ'],
             하: ['ㅎ','ㅏ','ㄹ','ㄱ','ㅓ','ㅇ','ㅖ','ㅇ','ㅛ'],
         },
     },
@@ -317,7 +368,7 @@ let conjugations = {
             어: ['ㄱ','ㅓ','ㅂ','ㄴ','ㅣ','ㄷ','ㅏ'],
             하: ['ㅎ','ㅏ','ㄹ',' ','ㄱ','ㅓ','ㅅ','ㅇ','ㅣ','ㅂ','ㄴ','ㅣ','ㄷ','ㅏ'],
         },
-    }
-};
+    },
+}
 
 module.exports = { kKonjugator };
