@@ -260,10 +260,6 @@ function conjugateDahYo(word,level,tense) {
         return handleAsRegulars(cut, veryLL, word, level, tense);
 }
 
-function conjugateIIDah(word, level, tense){
-    const cut = cutTheLast
-}
-
 function conjugateHaDahYo(word,level,tense) {
     const cut = cutTheLastHaDahLetters(word)
     return Hangul.assemble ([...cut, ...conjugations[level][tense]['하']]);
@@ -288,22 +284,17 @@ function kKonjugator (word,level,tense){
 let conjugationsIIDah = {
     informalLow: {
         past: 
-            ['ㅇ','ㅣ','ㅇ','ㅓ','ㅆ','ㅇ','ㅓ','/','ㅇ','ㅕ','ㅆ','ㅇ','ㅓ'],
-            //vowel: ['ㅇ','ㅕ','ㅅ','ㅅ','ㅇ','ㅓ'],
-        
+            ['ㅇ','ㅣ','ㅇ','ㅓ','ㅆ','ㅇ','ㅓ','/','ㅇ','ㅕ','ㅆ','ㅇ','ㅓ'],        
         present:
             ['ㅇ','ㅣ','ㅇ','ㅑ','/','ㅇ','ㅑ'],
-            //vowel: ['ㅇ','ㅑ'],
         future:
             ['ㅇ','ㅣ','ㄹ','ㄱ','ㅓ','ㅇ','ㅑ']
     },
     informalHigh: {
         past: 
             ['ㅇ','ㅣ','ㅇ','ㅓ','ㅆ','ㅇ','ㅓ','ㅇ','ㅛ','/','ㅇ','ㅕ','ㅆ','ㅇ','ㅓ','ㅇ','ㅛ'],
-            //vowel: ['ㅇ','ㅕ','ㅅ','ㅅ','ㅇ','ㅓ','ㅇ','ㅛ'],
         present: 
             ['ㅇ','ㅣ','ㅇ','ㅖ','ㅇ','ㅛ','/','ㅇ','ㅖ','ㅇ','ㅛ'],
-            //vowel: ['ㅇ','ㅖ','ㅇ','ㅛ'],
         future:
             ['ㅇ','ㅣ','ㄹ','ㄱ','ㅓ','ㅇ','ㅖ','ㅇ','ㅛ']
     },
