@@ -2,12 +2,19 @@
   "name": "k-konjugator",
   "version": "1.0.0",
   "description": "K Bot",
+  "engines": {
+    "node": "16.x"
+  },
   "scripts": {
-    "start": "node src/index.js"
+    "forever:start": "forever start src/index.js && forever logs 0 -f",
+    "forever:stop": "forever stopall || exit 0",
+    "prestart": "npm run forever:stop",
+    "start": "npm run forever:stop"
   },
   "dependencies": {
     "discord.js": "^13.1.0",
     "dotenv": "^8.2.0",
+    "forever": "^4.0.1",
     "hangul-js": "^0.2.6"
   },
   "author": "Dje Tang",
