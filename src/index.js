@@ -23,14 +23,23 @@ client.on('messageCreate', (message) => {
     const text = message.content;
     const textArray = text.split(' ');
     if (message.author.id === process.env.CLIENT_ID);
-    else if (text.includes ("!k")) {
+    else if (text.includes ('!k')) {
         if (message.channel.id !== process.env.BOT_ACTIVE_CHANNEL)
-            message.channel.send(`${message.author},plz type this in the correct channel!`);
+            message.channel.send(`${message.author},plz type this in the correct channel!`)
         else if (textArray.length === 4) 
-            message.reply(kKonjugator(textArray[1], textArray[2], textArray[3]));
+            message.reply(kKonjugator(textArray[1], textArray[2], textArray[3]))
         else
-            message.channel.send(`${message.author},If you want to konjugate, type: !k verb level tense`);
+            message.channel.send(`${message.author},To conjugate, type: 
+
+            !k [dictionary form of verb to conjugate] [level] [tense]
+            
+            levels to choose from: informalLow, informalHigh, formalHigh
+            tenses to choose from: past, present, future
+            
+            Here's an example! 
+            !k 먹다 informalHigh past`);
     };
+
 });
 
 client.login(process.env.ACCESS_TOKEN);
