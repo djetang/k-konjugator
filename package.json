@@ -9,11 +9,12 @@
     "forever:start": "forever start src/index.js && forever logs 0 -f",
     "forever:stop": "forever stopall || exit 0",
     "prestart": "npm run forever:stop",
-    "start": "npm run forever:start"
+    "start": "npm run forever:start",
+    "start:local": "node src/index.js"
   },
   "dependencies": {
     "discord.js": "^13.1.0",
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.2.0", 
     "forever": "^4.0.1",
     "hangul-js": "^0.2.6"
   },
