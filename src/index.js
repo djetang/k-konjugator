@@ -26,7 +26,7 @@ client.on('messageCreate', (message) => {
     const textArray = text.split(' ');
     if (message.author.id === process.env.CLIENT_ID);
     else if (text.includes ('!k')) {
-        if (message.channel.id !== process.env.BOT_ACTIVE_CHANNEL)
+        if (!process.env.BOT_ACTIVE_CHANNEL.split(",").includes(message.channel.id)
             message.channel.send(`${message.author},plz type this in the correct channel!`)
         else if (textArray.length === 4) 
             message.reply(kKonjugator(textArray[1], textArray[2], textArray[3]))
