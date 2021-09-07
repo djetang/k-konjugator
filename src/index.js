@@ -34,9 +34,11 @@ client.on('messageCreate', (message) => {
 
             levels to choose from: informalLow, informalHigh, formalHigh
             tenses to choose from: past, present, future
-
-            Here's an example!
-            !k 먹다 informalHigh past`);
+            
+            Here's an example! 
+            !k 먹다 informalHigh past
+            
+            OR: just type /conjugate for the app!`);
     };
 });
 
