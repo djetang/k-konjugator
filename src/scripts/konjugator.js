@@ -1,4 +1,4 @@
-//Welcome to the conjugator! 
+///Welcome to the conjugator! 
 
 const Hangul = require('hangul-js');
 const validTenses = ['past', 'present', 'future'];
